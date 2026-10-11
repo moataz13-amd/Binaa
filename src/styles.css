@@ -78,3 +78,6 @@
 
 
 
+
+.wizard-mobile-footer{display:none}
+@media(max-width:760px){.desktop-wizard-footer{display:none}.wizard-layout{grid-template-rows:auto auto minmax(0,1fr)}.wizard-mobile-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 5px 16px #0c1b2a0d;z-index:4}.wizard-mobile-footer .btn{min-width:88px}.wizard-mobile-footer .btn.primary{width:auto}.wizard-mobile-footer>span{font-size:10px;color:var(--muted);white-space:nowrap}}
