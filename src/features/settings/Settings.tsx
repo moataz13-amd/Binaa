@@ -23,7 +23,7 @@ export function Settings({data,roles,userId}:{data:Snapshot;roles:Role[];userId:
  </>;
 }
 
-function TeamManagement({data,roles,userId}:{data:Snapshot;roles:Role[];userId:string}){
+export function TeamManagement({data,roles,userId}:{data:Snapshot;roles:Role[];userId:string}){
  const [creating,setCreating]=useState(false);const [editing,setEditing]=useState(false);const [name,setName]=useState('');const [phone,setPhone]=useState('');const [password,setPassword]=useState('');const [role,setRole]=useState<Role>('driver');const [target,setTarget]=useState('');const [error,setError]=useState('');const [success,setSuccess]=useState('');const [busy,setBusy]=useState(false);const query=useQueryClient();const allowed=assignableFor(roles);
  async function refresh(){await query.invalidateQueries({queryKey:['operations',userId]});}
  async function createUser(){setBusy(true);setError('');setSuccess('');try{const email=phoneLoginEmail(phone);if(name.trim().length<2)throw new Error('اكتب اسمًا واضحًا');if(password.length<8)throw new Error('كلمة المرور يجب ألا تقل عن 8 حروف أو أرقام');const {data:result,error:e}=await client().functions.invoke('admin-users',{body:{name:name.trim(),phone,email,password,role}});if(e)throw e;if(result?.error)throw new Error(result.error);await refresh();setCreating(false);setName('');setPhone('');setPassword('');setRole('driver');setSuccess('تم إنشاء الحساب وتعيين الصلاحية. يمكن للمستخدم الدخول فورًا.');}catch(e){setError(friendlyError(e));}finally{setBusy(false);}}
