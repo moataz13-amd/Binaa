@@ -26,7 +26,7 @@ async function send(op:Pending){
  await(await db()).delete('queue',op.id);emit();
 }
 let syncing=false;
-export async function sync(userId:string){if(syncing||!navigator.onLine)return;syncing=true;try{for(const op of await pending(userId)){if(op.state!=='pending')continue;try{await send(op);}catch{break;}}}finally{syncing=false;emit();}}
+export async function sync(userId:string){if(syncing||!navigator.onLine)return;syncing=true;try{for(const op of await pending(userId)){if(op.state!=='pending')continue;try{await send(op);}catch{break;}}}finally{syncing=false;}}
 export async function retry(id:string,userId:string){const op=(await pending(userId)).find(p=>p.id===id);if(!op)return;await send(op);}
 // Never change a queued payload automatically: the user must review a fresh operation.
 export async function discard(id:string,userId:string){const op=(await pending(userId)).find(p=>p.id===id);if(op?.state==='pending')throw new Error('يجب التحقق من الخادم قبل حذف عملية قد تكون وصلت.');if(op)await(await db()).delete('queue',id);emit();}
