@@ -1,9 +1,11 @@
 import {createClient} from 'npm:@supabase/supabase-js@2';
-const defaultOrigin='https://binaa-construction-operations.bronzesugar5.chatgpt.site';
-const allowedOrigins=(Deno.env.get('APP_ORIGINS')??defaultOrigin).split(',').map(x=>x.trim());
+const productionOrigin='https://binaa-construction-operations.bronzesugar5.chatgpt.site';
+const defaultOrigins=[productionOrigin,'http://localhost:5173','http://127.0.0.1:5173'];
+const configuredOrigins=(Deno.env.get('APP_ORIGINS')??'').split(',').map(x=>x.trim()).filter(Boolean);
+const allowedOrigins=new Set([...defaultOrigins,...configuredOrigins]);
 Deno.serve(async(request:Request)=>{
- const origin=request.headers.get('origin')??defaultOrigin;const allowed=allowedOrigins.includes(origin);
- const cors={'Access-Control-Allow-Origin':allowed?origin:defaultOrigin,'Access-Control-Allow-Headers':'authorization, apikey, content-type, x-client-info','Access-Control-Allow-Methods':'POST, OPTIONS','Vary':'Origin'};
+ const origin=request.headers.get('origin')??productionOrigin;const allowed=allowedOrigins.has(origin);
+ const cors={'Access-Control-Allow-Origin':allowed?origin:productionOrigin,'Access-Control-Allow-Headers':'authorization, apikey, content-type, x-client-info','Access-Control-Allow-Methods':'POST, OPTIONS','Access-Control-Max-Age':'86400','Vary':'Origin'};
  const reply=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{...cors,'Content-Type':'application/json'}});
  if(request.method==='OPTIONS')return new Response(null,{headers:cors});
  if(request.method!=='POST'||!allowed)return reply({error:'FORBIDDEN'},403);
