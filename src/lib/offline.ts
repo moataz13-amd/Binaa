@@ -17,11 +17,16 @@ export async function submit(userId:string,kind:string,payload:Record<string,unk
 async function send(op:Pending){
  const {data:{session}}=await client().auth.getSession();if(session?.user.id!==op.userId)throw new Error('UNAUTHORIZED');
  // RPC enforces the same transaction boundary as the optional Edge Function gateway.
- const {error}=await client().rpc('perform_operation',{operation_id:op.id,operation_kind:op.kind,payload:op.payload});
+ const {data,error}=await client().rpc('perform_operation',{operation_id:op.id,operation_kind:op.kind,payload:op.payload});
  if(error){
    const transport=!navigator.onLine||/fetch|network|timeout/i.test(error.message);
    op.state=transport?'pending':/CONFLICT|LOCKED/.test(error.message)?'conflict':'error';op.error=error.message;
    await(await db()).put('queue',op);emit();throw new Error(error.message);
+ }
+ if(data&&typeof data==='object'&&'status' in data&&data.status==='rejected'){
+   const message=String('error' in data?data.error:'OPERATION_REJECTED');
+   op.state=/CONFLICT|LOCKED/.test(message)?'conflict':'error';op.error=message;
+   await(await db()).put('queue',op);emit();throw new Error(message);
  }
  await(await db()).delete('queue',op.id);emit();
 }
