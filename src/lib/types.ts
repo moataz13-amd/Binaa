@@ -1,0 +1,11 @@
+export type Role = 'owner'|'administrator'|'accountant'|'driver'|'worker';
+export type Row = { id: string; [key: string]: unknown };
+export type Snapshot = Record<string, Row[]>;
+export const tables = ['profiles','roles','user_roles','employees','trucks','materials','customers','construction_sites','expense_categories','shifts','shift_assignments','deliveries','delivery_items','material_movements','custody_accounts','custody_transactions','expenses','customer_invoices','customer_payments','cash_transfers','reconciliation_records','customer_prices','system_settings'] as const;
+export const str = (r: Row|undefined, k: string) => String(r?.[k] ?? '');
+export const rows = (s:Snapshot|undefined,k:string):Row[] => s?.[k] ?? [];
+export const label = (s:Snapshot|undefined,t:string,id:unknown) => str(rows(s,t).find(r=>r.id===id),'name') || '—';
+export const roleNames:Record<Role,string> = {owner:'المالك',administrator:'مدير العمليات',accountant:'المحاسب',driver:'السائق',worker:'العامل'};
+export const unitNames:Record<string,string> = {m3:'م³',ton:'طن',kg:'كجم',bag:'شيكارة',load:'نقلة'};
+export const statusNames:Record<string,string> = {open:'مفتوحة',active:'جارية',pending_reconciliation:'بانتظار المراجعة',closed:'مغلقة',reopened:'أعيد فتحها',pending:'بانتظار الاستلام',accepted:'تم الاستلام',cancelled:'ملغاة',delivered:'تم التسليم'};
+export const operationNames:Record<string,string> = {delivery:'توصيلة جديدة',unloading:'تنزيل خامة',expense:'تسجيل مصروف',payment:'تحصيل من عميل',issue:'صرف عهدة',return:'استرداد عهدة',transfer:'تسليم نقدية',open_shift:'فتح وردية',close_shift:'إنهاء الوردية',approve_close:'اعتماد الوردية',reopen_shift:'إعادة فتح الوردية',accept_transfer:'تأكيد استلام النقدية',cancel_transfer:'إلغاء التسليم',reverse_cash:'عكس حركة نقدية',set_role:'تحديد الصلاحية'};
