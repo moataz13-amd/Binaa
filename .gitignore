@@ -6,3 +6,6 @@ dist/
 *.tsbuildinfo
 .sites-local/
 artifacts/
+supabase/.temp/*
+!supabase/.temp/cli-latest
+!supabase/.temp/linked-project.json
